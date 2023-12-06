@@ -91,8 +91,9 @@ showing a notification, or updating your bar or something else. `bootsig-verify`
 will check the presence of `/usr/lib/bootsig/post-verify` and will execute it if
 present. The first argument will be `0` if the signatures check, `1` otherwise.
 
-It is important for security reason that this script is owned and only writable
-by root:
+It is important for security reasons that this script is owned and only writable
+by root (you do not want a random use to edit that file and inject code that
+will be run as root):
 
     sudo chown root:root /usr/lib/bootsig/post-verify
     sudo chmod 750 /usr/lib/bootsig/post-verify
@@ -100,7 +101,7 @@ by root:
 > NOTE: the script will not be executed if not owned by root and perms are not
 > set to 750
 
-### Notify-send example
+### notify-send example
 
 Write a script in `/usr/lib/bootsig/post-verify`:
 
