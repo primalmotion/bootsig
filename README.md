@@ -71,6 +71,18 @@ Then sign your boot partition:
 You will be prompted for your passphrase (or your pin if you use a smartcard) to
 sign `/boot/boot.sum` and `/boot/boot.count`
 
+You can verify the signature anytime by running:
+
+    sudo bootsig-verify
+
+You can also check the status of the last run of `bootsig-verify` by running:
+
+    bootsig-check
+
+> NOTE: `bootsig-check` is not checking any signature and only checking the last
+> reported status of `bootsig-verify`. This is less secure, but does not require
+> root privileges.
+
 ## Post script
 
 You probably want to know if the boot partition has been tampered with, like
