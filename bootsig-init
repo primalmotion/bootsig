@@ -22,3 +22,5 @@ gpg \
 	--no-default-keyring \
 	--keyring "$BOOTSIG_KEYRING" \
 	-K --with-colons 2>/dev/null | grep '^fpr:' | cut --delimiter ':' --fields 10 | sed '1p;d' | tr -d '\n') >/etc/bootsig/keyid
+
+gpg --no-default-keyring --keyring "$BOOTSIG_KEYRING" --card-status
