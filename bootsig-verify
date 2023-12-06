@@ -1,0 +1,61 @@
+#!/bin/bash
+
+source /etc/bootsig/config
+source /usr/lib/bootsig/functions
+check_root
+check_keyid
+
+if [ ! -f /boot/boot.sum ]; then
+	echo "missing /boot/boot.sum. run sudo bootsig-sign first"
+	exit 1
+fi
+
+if [ ! -f /boot/boot.count ]; then
+	echo "missing /boot/boot.count. run sudo bootsig-sign first"
+	exit 1
+fi
+
+function write_result() {
+	echo -n "$1" >"$BOOTSIG_STATUS_FILE"
+	chmod 644 "$BOOTSIG_STATUS_FILE"
+	echo "$2"
+
+	if [[ -f /usr/lib/bootsig/post-verify ]]; then
+		echo "running post-verify script"
+		/usr/lib/bootsig/post-verify "$1"
+	fi
+}
+
+cd /boot || exit
+
+if ! gpg \
+	--no-default-keyring \
+	--keyring="$BOOTSIG_KEYRING" \
+	-u "$(keyid)" \
+	--verify "$BOOTSIG_DATA/boot.sum.sig" \
+	/boot/boot.sum; then
+	write_result 1 "invalid signature for /boot/boot.sum"
+	exit 1
+fi
+
+if ! gpg \
+	--no-default-keyring \
+	--keyring="$BOOTSIG_KEYRING" \
+	-u "$(keyid)" \
+	--verify "$BOOTSIG_DATA/boot.count.sig" \
+	/boot/boot.count; then
+	write_result 1 "invalid signature for /boot/boot.count"
+	exit 2
+fi
+
+if ! sha256sum --status -c /boot/boot.sum; then
+	write_result 1 "invalid checksum in /boot"
+	exit 3
+fi
+
+if [[ "$(cat /boot/boot.count)" != "$(find /boot -not -path '/boot/boot.sum' -not -path '/boot/boot.count' | wc -l)" ]]; then
+	write_result 1 "invalid number of files in /boot"
+	exit 4
+fi
+
+write_result 0 "ok"

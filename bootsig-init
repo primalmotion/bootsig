@@ -1,0 +1,24 @@
+#!/bin/bash
+
+source /etc/bootsig/config
+source /usr/lib/bootsig/functions
+check_root
+
+mkdir -p "$BOOTSIG_DATA"
+
+KEY="$1"
+
+if [[ "$KEY" == "" ]]; then
+	echo "You must pass an exported key as argument"
+	exit 1
+fi
+
+gpg \
+	--no-default-keyring \
+	--keyring="$BOOTSIG_KEYRING" \
+	--import "$KEY"
+
+(gpg \
+	--no-default-keyring \
+	--keyring "$BOOTSIG_KEYRING" \
+	-K --with-colons 2>/dev/null | grep '^fpr:' | cut --delimiter ':' --fields 10 | sed '1p;d' | tr -d '\n') >/etc/bootsig/keyid

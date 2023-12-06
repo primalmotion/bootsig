@@ -1,0 +1,16 @@
+#!/bin/bash
+
+source /etc/bootsig/config
+
+if [ ! -f "$BOOTSIG_STATUS_FILE" ]; then
+	echo "boot status not available. run bootsig-verify first"
+	exit 1
+fi
+
+if [[ $(cat "$BOOTSIG_STATUS_FILE") == 0 ]]; then
+	echo "boot signatures all ok"
+	exit 0
+fi
+
+echo "[ERROR] invalid boot signatures."
+exit 1

@@ -1,0 +1,6 @@
+[Unit]
+Description=Verify /boot integrity
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bootsig-verify

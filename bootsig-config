@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export BOOTSIG_DATA="/var/lib/bootsig"
+export BOOTSIG_KEYRING="$BOOTSIG_DATA/bootsig-keyring"
+export BOOTSIG_STATUS_FILE="$BOOTSIG_DATA/bootsig-status"
+export BOOTSIG_VERIFY_PRE="pkill -RTMIN+8 waybar"

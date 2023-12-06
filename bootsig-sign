@@ -1,0 +1,37 @@
+#!/bin/bash
+
+source /etc/bootsig/config
+source /usr/lib/bootsig/functions
+check_root
+check_keyid
+
+find /boot \
+	-not -path '/boot/boot.sum' \
+	-not -path '/boot/boot.count' | wc -l >/boot/boot.count
+
+find /boot \
+	-type f \
+	-not -path '/boot/boot.sum' \
+	-exec sha256sum {} \; >/boot/boot.sum
+
+echo "* signing /boot/boot.sum"
+gpg \
+	--no-default-keyring \
+	--keyring="$BOOTSIG_KEYRING" \
+	-u "$(keyid)" \
+	--detach-sign \
+	-o "$BOOTSIG_DATA/boot.sum.sig" \
+	/boot/boot.sum
+
+echo "* signing /boot/boot.count"
+gpg \
+	--no-default-keyring \
+	--keyring="$BOOTSIG_KEYRING" \
+	-u "$(keyid)" \
+	--detach-sign \
+	-o "$BOOTSIG_DATA/boot.count.sig" \
+	/boot/boot.count
+
+bootsig-verify
+
+echo "* done"

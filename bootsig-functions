@@ -1,0 +1,31 @@
+#!/bin/bash
+
+function check_root() {
+	if [[ "$(id -u)" != "0" ]]; then
+		echo "Please run with sudo"
+		exit 1
+	fi
+}
+export -f check_root
+
+function check_keyid() {
+	if [ ! -f /etc/bootsig/keyid ]; then
+		echo "You must first initialize bootsig."
+		echo "To do so, export the gpg key you want to use by running:"
+		echo
+		echo "    gpg --export-secret-key --armor KEYID > /tmp/secret.key"
+		echo
+		echo "Then run:"
+		echo
+		echo "    sudo bootsig-init /tmp/secret.key"
+		exit 1
+	fi
+}
+export -f check_keyid
+
+function keyid() {
+	if [ -f /etc/bootsig/keyid ]; then
+		cat /etc/bootsig/keyid
+	fi
+}
+export -f keyid
