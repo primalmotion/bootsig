@@ -58,7 +58,7 @@ If you want to install the pacman hook (Arch and derivatives):
 
 First export one of your keys
 
-    gpg --export-secret-keys 387CC53BDF8C1142FC66832778B51E298FC66E62 > /tmp/secret.key
+    gpg --export-secret-keys [KEY-ID] > /tmp/secret.key
 
 Then initialize bootsig:
 
@@ -68,19 +68,24 @@ Then sign your boot partition:
 
     sudo bootsig-sign
 
-You will be prompted for your passphrase (or your pin if you use smartcard) to
+You will be prompted for your passphrase (or your pin if you use a smartcard) to
 sign `/boot/boot.sum` and `/boot/boot.count`
 
 ## Post script
 
-You probably want to know if the boot integrity is not cheking up, like showing
-a notification, or updating your bar or anything
+You probably want to know if the boot partition has been tampered with, like
+showing a notification, or updating your bar or something else. `bootsig-verify`
+will check the presence of `/usr/lib/bootsig/post-verify` and will execute it if
+present. The first argument will be `0` if the signatures check, `1` otherwise.
 
 It is important for security reason that this script is owned and only writable
 by root:
 
     sudo chown root:root /usr/lib/bootsig/post-verify
     sudo chmod 755 /usr/lib/bootsig/post-verify
+
+> NOTE: the script will not be executed if not owned by root and perms are not
+> set to 755
 
 ### Notify-send example
 
