@@ -4,9 +4,9 @@ Bootsig is the poor man's pureboot /boot integrity checks.
 
 It is made of the following components
 
-- `bootsig-init`: initialize gpg keychain with one key to sign /boot
-- `bootsig-sign`: signs the /boot folder
-- `bootsig-verify`: verifies the signatures of /boot files
+- `bootsig-init`: initialize a gpg keychain with one key to sign `/boot`
+- `bootsig-sign`: checksums, counts and signs the content `/boot` folder
+- `bootsig-verify`: verifies the signatures, sum and counts of `/boot` folder
 - `bootsig-check`: userland quick check
 
 ## Concepts
@@ -21,26 +21,26 @@ The integrity is checked using the following process
 
 ### Signature
 
-- generate the `sha256sum` for data in `/boot` and store it in `/boot/boot.sum`
-- count the files and write the number in `/boot/boot.count`
+- generates the `sha256sum` for data in `/boot` and store it in `/boot/boot.sum`
+- counts the files and write the number in `/boot/boot.count`
 - signs `boot.sum` and `boot.count`
 - stores the signatures in `/var/lib/bootsig`
 
 ### Verification
 
-- check the signature of `boot.sum` and `boot.count`
-- verify the `sha256sum` of all files in `/boot`
-- verify the number of files is still equal to what is stored in `boot.count`
-- write a status file in `/usr/lib/bootsig/bootsig-status`
+- checks the signature of `boot.sum` and `boot.count`
+- verifies the `sha256sum` of all files in `/boot`
+- verifies the number of files is still equal to what is stored in `boot.count`
+- writes a status file in `/usr/lib/bootsig/bootsig-status`
 - eventually runs a post script from `/usr/lib/bootsig/post-verify`
 
 ### User check
 
-- exit 0 or 1 based on the content of `/usr/lib/bootsig/bootsig-status`
+- exits 0 or 1 based on the content of `/usr/lib/bootsig/bootsig-status`
 
 ## Installation
 
-You can use the PKGBUILD if you are on arch, or run the `install` target from
+You can use the `PKGBUILD` if you are on arch, or run the `install` target from
 the provided `Makefile`
 
     PREFIX= make install
@@ -63,6 +63,7 @@ First export one of your keys
 Then initialize bootsig:
 
     sudo bootsig-init /tmp/secret.key
+    rm /tmp/secret.key
 
 Then sign your boot partition:
 
