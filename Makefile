@@ -8,10 +8,14 @@ install:
 	install -D -m 755 bootsig-check "$(PREFIX)/usr/bin/bootsig-check"
 	install -D -m 644 bootsig-config "$(PREFIX)/etc/bootsig/config"
 	install -D -m 644 bootsig-functions "$(PREFIX)/usr/lib/bootsig/functions"
+	chmod 755 "$(PREFIX)/usr/lib/bootsig"
+
+install-systemd:
 	install -D -m 644 bootsig.service "$(PREFIX)/usr/lib/systemd/system/bootsig.service"
 	install -D -m 644 bootsig.timer "$(PREFIX)/usr/lib/systemd/system/bootsig.timer"
+
+install-pacman-hook:
 	install -D -m 644 99-bootsig.hook "$(PREFIX)/etc/pacman.d/hooks/99-bootsig.hook"
-	chmod 755 "$(PREFIX)/usr/lib/bootsig"
 
 uninstall:
 	rm -rf "$(PREFIX)/usr/bin/bootsig-init"
@@ -24,3 +28,5 @@ uninstall:
 	rm -rf "$(PREFIX)/usr/lib/systemd/system/bootsig.service"
 	rm -rf "$(PREFIX)/usr/lib/systemd/system/bootsig.timer"
 	rm -rf "$(PREFIX)/etc/pacman.d/hooks/99-bootsig.hook"
+	rm -rf "$(PREFIX)/boot/boot.sum"
+	rm -rf "$(PREFIX)/boot/boot.count"

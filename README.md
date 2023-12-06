@@ -15,18 +15,19 @@ The integrity is checked using the following process
 
 ### Initialization
 
-- creates a new gpg keyring /usr/lib/bootsig/bootsig-keyring
+- creates a new gpg keyring `/usr/lib/bootsig/bootsig-keyring`
 - imports the key given as arguments into that keyring
 - run `gpg --card-status` to create the stubs (if you use a smartcard)
 
 ### Signature
 
-- count the files (beside `boot.sum` and `boot.count`) and write the number in
-  `/boot/boot.count`
+- generate the `sha256sum` for data in `/boot` and store it in `/boot/boot.sum`
+- count the files and write the number in `/boot/boot.count`
 - signs `boot.sum` and `boot.count`
 - stores the signatures in `/var/lib/bootsig`
 
 ### Verification
+
 - check the signature of `boot.sum` and `boot.count`
 - verify the `sha256sum` of all files in `/boot`
 - verify the number of files is still equal to what is stored in `boot.count`
@@ -34,7 +35,24 @@ The integrity is checked using the following process
 - eventually runs a post script from `/usr/lib/bootsig/post-verify`
 
 ### User check
+
 - exit 0 or 1 based on the content of `/usr/lib/bootsig/bootsig-status`
+
+## Installation
+
+You can use the PKGBUILD if you are on arch, or run the `install` target from
+the provided `Makefile`
+
+    PREFIX= make install
+
+If you want to install the systemd files:
+
+    PREFIX= make install-systemd
+    systemctl enable --now bootsig.timer
+
+If you want to install the pacman hook (Arch and derivatives):
+
+    PREFIX= make install-pacman-hook
 
 ## Usage
 
@@ -53,20 +71,6 @@ Then sign your boot partition:
 You will be prompted for your passphrase (or your pin if you use smartcard) to
 sign `/boot/boot.sum` and `/boot/boot.count`
 
-## Systemd integration
-
-You can start a timer that will verify regularly the signature:
-
-    systemd enable --now bootsig.timer
-
-## Pacman integration
-
-On Arch, you can make pacman run the verification after updating several key
-packages.
-
-    sudo mkdir -p /etc/pacman.d/hooks/
-    sudo cp 99-bootsig.hook /etc/pacman.d/hooks
-
 ## Post script
 
 You probably want to know if the boot integrity is not cheking up, like showing
@@ -82,18 +86,17 @@ by root:
 
 Write a script in `/usr/lib/bootsig/post-verify`:
 
+    #!/bin/bash
     if [[ "$1" != "0" ]]; then
-	sudo -u antoine \
-		DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus \
-		notify-send -w --urgency critical bootsig '/boot integrity check failed'
+	  sudo -u YOURUSERNAME \
+	    DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus \
+		notify-send --urgency critical bootsig '/boot integrity check failed'
     fi
-
 
 ### Waybar example
 
 Add the following custom item in your waybar config
 
-    ...
     "custom/sigmismatch": {
 		"interval": "once",
 		"signal": 8,
@@ -101,7 +104,6 @@ Add the following custom item in your waybar config
 		"format": "Boot Signature Mismatch",
 		"exec": "echo -n",
 	},
-    ...
 
 Then write a script in `/usr/lib/bootsig/post-verify`:
 
