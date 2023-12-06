@@ -82,10 +82,10 @@ It is important for security reason that this script is owned and only writable
 by root:
 
     sudo chown root:root /usr/lib/bootsig/post-verify
-    sudo chmod 755 /usr/lib/bootsig/post-verify
+    sudo chmod 750 /usr/lib/bootsig/post-verify
 
 > NOTE: the script will not be executed if not owned by root and perms are not
-> set to 755
+> set to 750
 
 ### Notify-send example
 

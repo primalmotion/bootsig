@@ -24,7 +24,7 @@ function write_result() {
 		echo "running post-verify script"
 		if [[ "$(stat -c '%u' /usr/lib/bootsig/post-verify)" != 0 ]]; then
 			echo "[ERROR] not running post-verify as it is not owned by root."
-		elif [[ "$(stat -c '%a' /usr/lib/bootsig/post-verify)" != "755" ]]; then
+		elif [[ "$(stat -c '%a' /usr/lib/bootsig/post-verify)" != "750" ]]; then
 			echo "[ERROR] not running post-verify as permission are not 755"
 		else
 			/usr/lib/bootsig/post-verify "$1"
